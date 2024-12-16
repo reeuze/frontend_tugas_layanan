@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_tugas_layanan/features/home/home_page.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const PinterestCloneApp());
 }
 

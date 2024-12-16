@@ -4,8 +4,7 @@ import 'package:frontend_tugas_layanan/features/tags/tags_page.dart';
 import 'package:frontend_tugas_layanan/features/user/user_page.dart';
 import 'package:frontend_tugas_layanan/features/image/image_page.dart';
 import 'package:frontend_tugas_layanan/features/image/image_model.dart';
-
-// import 'dart:developer' as developer;
+import 'package:frontend_tugas_layanan/features/image/upload_image.dart';
 
 class HomePage extends StatefulWidget {
   final String? filterTag;
@@ -140,9 +139,7 @@ class _HomePageState extends State<HomePage> {
               final image = filteredImages[index];
               return GestureDetector(
                 onTap: () async {
-                  // developer.log(image.imageId.toString());
                   final ImageModel updatedImage = await _controller.getImageById(image.imageId);
-                  // developer.log(updatedImage.toString());
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -161,6 +158,24 @@ class _HomePageState extends State<HomePage> {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UploadImagePage(
+                // availableTags: [],
+                currentUserId: 10,
+              ),
+            ),
+          );
+          if (result == true) {
+            _loadImages(); // Reload gambar setelah berhasil upload
+          }
+        },
+        child: const Icon(Icons.upload),
+        backgroundColor: Colors.redAccent,
       ),
     );
   }

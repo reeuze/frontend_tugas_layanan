@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_tugas_layanan/features/image/image_model.dart';
+import 'package:frontend_tugas_layanan/features/image/update_image.dart';
 import 'package:frontend_tugas_layanan/features/home/home_page.dart';
 import 'package:frontend_tugas_layanan/features/user/user_page.dart';
 
@@ -14,6 +15,20 @@ class ImagePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(image.name),
         backgroundColor: Colors.redAccent,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              // Navigasi ke halaman update image
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UpdateImagePage(image: image),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,3 +125,4 @@ class ImagePage extends StatelessWidget {
     );
   }
 }
+

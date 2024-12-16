@@ -1,10 +1,11 @@
 import 'dart:convert';
-// import 'package:flutter/gestures.dart';
+import 'package:http_parser/http_parser.dart';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
 import 'image_model.dart';
 
-// import 'dart:developer' as developer;
+import 'dart:developer' as developer;
 
 class ImageController {
   final String baseUrl = 'http://localhost:4000';
@@ -34,17 +35,47 @@ class ImageController {
     }
   }
 
-  Future<void> addImage(Map<String, dynamic> image, String filePath) async {
+  Future<ImageModel> addImage(
+    ImageModel imageModel,
+    Uint8List fileBytes,
+    String fileName,
+    String mimeType,
+  ) async {
     final uri = Uri.parse('$baseUrl/images');
     final request = http.MultipartRequest('POST', uri);
+
+    // Konversi ImageModel ke Map untuk fields
     Map<String, String> imageFields = {
-      for (var entry in image.entries) entry.key: entry.value.toString()
+      'name': imageModel.name,
+      'description': imageModel.description,
+      'userId': imageModel.userId.toString(),
+      'path': imageModel.path,
     };
     request.fields.addAll(imageFields);
-    request.files.add(await http.MultipartFile.fromPath('file', filePath));
+
+    // Tambahkan file ke request
+    final file = http.MultipartFile.fromBytes(
+      'file',
+      fileBytes,
+      filename: fileName,
+      contentType: MediaType.parse(mimeType),
+    );
+    request.files.add(file);
+
+    developer.log('Request fields: ${request.fields}');
+    developer.log('Uploading file: $fileName with MIME type: $mimeType');
+
+    // Kirim request
     final response = await request.send();
-    if (response.statusCode != 200) {
-      throw Exception('Failed to add image');
+    final responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode == 201) {
+      final jsonResponse = jsonDecode(responseBody);
+      return ImageModel.fromJson(jsonResponse);
+    } else {
+      throw Exception(
+        'Failed to upload image. Status: ${response.statusCode}, Reason: ${response.reasonPhrase}',
+      );
     }
   }
 
